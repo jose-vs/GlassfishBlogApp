@@ -6,11 +6,12 @@ package Servlets;
 
 import Entities.User;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletConfig;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -30,6 +31,12 @@ import java.util.logging.Logger;
 public class AppServlet extends HttpServlet {
 
     private Logger logger;
+    private String uName;
+    private String psw;
+    private String name;
+    private User userObj;
+    private HttpSession session;
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -52,28 +59,26 @@ public class AppServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, NoResultException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
 
-            HttpSession session = request.getSession(true);
+        session = request.getSession(true);
+        uName = request.getParameter("uname");
+        psw = request.getParameter("psw");
+        name = "TESTNAME";
 
-            String uname = request.getParameter("uname");
-            String psw = request.getParameter("psw");
+        /**
+         * TODO: check if this exists in the database then save it to the
+         * session
+         */
+        if (entityManager != null) {
+            Query query
+                    = entityManager.createQuery("SELECT u FROM User u WHERE u.uName='"
+                            + uName + "' AND u.psw='" + psw + "'");
 
-            /**
-             * TODO: check if this exists in the database then save it to the
-             * session
-             */
-            
-            User user = new User(uname, psw, "John");
-            request.setAttribute("User", user);
-            session.setAttribute("User", user);
-            RequestDispatcher dispatcher = getServletContext().
-                    getRequestDispatcher("/home.jsp");
-            dispatcher.forward(request, response);
-
+            userObj = (User) query.getSingleResult();
         }
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -88,7 +93,23 @@ public class AppServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (NoResultException e) {
+
+            logger.info("_________________BRUH___________________");
+            request.setAttribute("error", "Invalid username or password");
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
+
+        }
+
+        User user = new User(uName, psw, name);
+        request.setAttribute("User", user);
+        session.setAttribute("User", user);
+        RequestDispatcher dispatcher = getServletContext().
+                getRequestDispatcher("/home.jsp");
+        dispatcher.forward(request, response);
+
     }
 
     /**
@@ -102,7 +123,27 @@ public class AppServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (NoResultException e) {
+
+            entityManager.createNativeQuery("INSERT INTO User (username, password, name) VALUES (?,?,?)")
+                    .setParameter(1, uName)
+                    .setParameter(2, psw)
+                    .setParameter(3, name)
+                    .executeUpdate();
+
+            User user = new User(uName, psw, name);
+            request.setAttribute("User", user);
+            session.setAttribute("User", user);
+            RequestDispatcher dispatcher = getServletContext().
+                    getRequestDispatcher("/home.jsp");
+            dispatcher.forward(request, response);
+        }
+
+        logger.info("_________________BRUH___________________");
+        request.setAttribute("error", "User already exists");
+        request.getRequestDispatcher("/signup.jsp").forward(request, response);
     }
 
     /**

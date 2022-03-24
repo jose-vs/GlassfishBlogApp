@@ -25,6 +25,8 @@
                     <label for="psw"><b>Password</b></label>
                     <input type="password" placeholder="Enter Password" name="psw" required>
 
+                    <%=(String)request.getAttribute("error")%>
+
                     <div class="clearfix">
                         <button type="submit" class="loginbtn">Login</button>
                     </div>
