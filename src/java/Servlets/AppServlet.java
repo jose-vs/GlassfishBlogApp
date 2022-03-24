@@ -5,10 +5,11 @@
 package Servlets;
 
 import Entities.User;
+import Entities.UserKey;
+import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletConfig;
 import java.io.IOException;
@@ -18,6 +19,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.HeuristicMixedException;
+import jakarta.transaction.HeuristicRollbackException;
+import jakarta.transaction.NotSupportedException;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.UserTransaction;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -34,11 +42,13 @@ public class AppServlet extends HttpServlet {
     private String uName;
     private String psw;
     private String name;
-    private User userObj;
     private HttpSession session;
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Resource
+    private UserTransaction userTransaction;
 
     public AppServlet() {
         logger = Logger.getLogger(this.getClass().getName());
@@ -71,14 +81,13 @@ public class AppServlet extends HttpServlet {
          * TODO: check if this exists in the database then save it to the
          * session
          */
-        if (entityManager != null) {
-            Query query
-                    = entityManager.createQuery("SELECT u FROM User u WHERE u.uName='"
-                            + uName + "' AND u.psw='" + psw + "'");
-
-            userObj = (User) query.getSingleResult();
-        }
-
+//        if (entityManager != null) {
+//            Query query
+//                    = entityManager.createQuery("SELECT u FROM User u WHERE u.uName='"
+//                            + uName + "' AND u.psw='" + psw + "'");
+//
+//            userObj = (User) query.getSingleResult();
+//        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -93,22 +102,22 @@ public class AppServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (NoResultException e) {
 
-            logger.info("_________________BRUH___________________");
-            request.setAttribute("error", "Invalid username or password");
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+        processRequest(request, response);
+        UserKey userKey = new UserKey(uName, psw);
+        User user = entityManager.find(User.class, userKey);
 
+        if (user != null) {
+            request.setAttribute("User", user);
+            session.setAttribute("User", user);
+            RequestDispatcher dispatcher = getServletContext().
+                    getRequestDispatcher("/home.jsp");
+            dispatcher.forward(request, response);
         }
 
-        User user = new User(uName, psw, name);
-        request.setAttribute("User", user);
-        session.setAttribute("User", user);
-        RequestDispatcher dispatcher = getServletContext().
-                getRequestDispatcher("/home.jsp");
-        dispatcher.forward(request, response);
+        logger.info("_________________BRUH___________________");
+        request.setAttribute("error", "Invalid username or password");
+        request.getRequestDispatcher("/login.jsp").forward(request, response);
 
     }
 
@@ -123,17 +132,27 @@ public class AppServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (NoResultException e) {
 
-            entityManager.createNativeQuery("INSERT INTO User (username, password, name) VALUES (?,?,?)")
-                    .setParameter(1, uName)
-                    .setParameter(2, psw)
-                    .setParameter(3, name)
-                    .executeUpdate();
+        processRequest(request, response);
+        UserKey userKey = new UserKey(uName, psw);
+        User user = entityManager.find(User.class, userKey);
 
-            User user = new User(uName, psw, name);
+        if (user != null) {
+            System.out.println("--------FOUND ME--------");
+            request.setAttribute("error", "User already exists");
+            request.getRequestDispatcher("/signup.jsp").forward(request, response);
+        } else {
+            System.out.println("------------------ Registering User ------------------");
+            user = new User(uName, psw, name);
+            try {
+                userTransaction.begin();
+                entityManager.persist(user);
+                userTransaction.commit();
+            } catch (NotSupportedException | SystemException | RollbackException
+                    | HeuristicMixedException | HeuristicRollbackException | SecurityException ex) {
+                Logger.getLogger(AppServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
             request.setAttribute("User", user);
             session.setAttribute("User", user);
             RequestDispatcher dispatcher = getServletContext().
@@ -141,9 +160,6 @@ public class AppServlet extends HttpServlet {
             dispatcher.forward(request, response);
         }
 
-        logger.info("_________________BRUH___________________");
-        request.setAttribute("error", "User already exists");
-        request.getRequestDispatcher("/signup.jsp").forward(request, response);
     }
 
     /**

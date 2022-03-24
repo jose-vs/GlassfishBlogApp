@@ -10,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 
 /**
@@ -18,6 +19,7 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "User")
+@IdClass(value = UserKey.class)
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -25,20 +27,20 @@ public class User implements Serializable {
     @Column(name = "username")
     private String uName;
 
+    @Id
     @Column(name = "password")
     private String psw;
-
 
     @Column(name = "name")
     private String name;
 
     public User() {
     }
-    
+
     public User(String uName, String psw, String name) {
         this.uName = uName;
         this.psw = psw;
-        this.name = name; 
+        this.name = name;
     }
 
 //    @Override
@@ -64,7 +66,6 @@ public class User implements Serializable {
 //    public String toString() {
 //        return "Entities.user[ id=" + id + " ]";
 //    }
-
     /**
      * @return the uName
      */
