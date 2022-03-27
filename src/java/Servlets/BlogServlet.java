@@ -4,11 +4,12 @@
  */
 package Servlets;
 
-import Entities.User;
 import Entities.BlogPost;
+import Entities.User;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletConfig;
 import java.io.IOException;
@@ -24,17 +25,17 @@ import jakarta.transaction.NotSupportedException;
 import jakarta.transaction.RollbackException;
 import jakarta.transaction.SystemException;
 import jakarta.transaction.UserTransaction;
-import java.util.logging.Level;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  *
  * @author jcvsa
  */
-@WebServlet(name = "HomeServlet", urlPatterns = {"/Home"})
-public class HomeServlet extends HttpServlet {
+@WebServlet(name = "BlogServlet", urlPatterns = {"/Blog"})
+public class BlogServlet extends HttpServlet {
 
     private HttpSession session;
     private Logger logger;
@@ -45,7 +46,7 @@ public class HomeServlet extends HttpServlet {
     @Resource
     private UserTransaction userTransaction;
 
-    public HomeServlet() {
+    public BlogServlet() {
         logger = Logger.getLogger(this.getClass().getName());
     }
 
@@ -66,17 +67,26 @@ public class HomeServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        List<BlogPost> result
-                = entityManager.createQuery("SELECT b FROM BlogPost b").getResultList();
 
-        if (result == null) {
-            result = new ArrayList<>();
+        session = request.getSession(true);
+        User u = (User) session.getAttribute("User");
+
+        List<BlogPost> blogList = new ArrayList<>();
+        if (entityManager != null) {
+            String jpqlCommand
+                    = "SELECT b FROM BlogPost b WHERE b.author LIKE :author";
+            Query query
+                    = entityManager.createQuery(jpqlCommand);
+            query.setParameter("author", u.getuName());
+            blogList = query.getResultList();
+            logger.log(Level.INFO, "Successfully executed jpql query for species {0}", u.getuName());
         }
 
-        request.setAttribute("allPosts", result);
+        request.setAttribute("blogList", blogList);
         RequestDispatcher dispatcher = getServletContext().
-                getRequestDispatcher("/home.jsp");
+                getRequestDispatcher("/viewblogs.jsp");
         dispatcher.forward(request, response);
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -105,26 +115,24 @@ public class HomeServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        session = request.getSession(true);
+
+        int id = Integer.parseInt(request.getParameter("id"));
         String title = (String) request.getParameter("title");
-        String name = ((User) session.getAttribute("User")).getName();
-        String content = (String) request.getParameter("text");
+        String content = (String) request.getParameter("content");
 
-        if (title != null && name != null && content != null) {
-            try {
+        BlogPost blogEdit = entityManager.find(BlogPost.class, id);
 
-                userTransaction.begin();
-                entityManager.persist(
-                        new BlogPost(title, name, content)
-                );
-                userTransaction.commit();
-            } catch (NotSupportedException | SystemException | RollbackException
-                    | HeuristicMixedException | HeuristicRollbackException | SecurityException ex) {
-                Logger.getLogger(AppServlet.class.getName()).log(Level.SEVERE, null, ex);
-
-            }
+        blogEdit.setContent(content);
+        blogEdit.setTitle(title);
+        
+        try {
+            userTransaction.begin();
+            entityManager.merge(blogEdit);
+            userTransaction.commit();
+        } catch (NotSupportedException | SystemException | RollbackException
+                | HeuristicMixedException | HeuristicRollbackException | SecurityException ex) {
+            Logger.getLogger(AppServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         processRequest(request, response);
     }
 

@@ -42,11 +42,14 @@
                             <input type="submit" value="Submit">
                         </form> 
                     </div>
+                    <form action="Blog">
+                        <input type="submit" value="View your posts" >
+                    </form> 
                     <!-- All Posts -->
                     <div>
                         <c:if test="${not empty requestScope.allPosts}">
                             <c:forEach items="${allPosts}" var="post">
-                                <div>
+                                <div style= 'border:1px solid #000000;'>
                                     <div>${post.getTitle()}</div>
                                     <div>${post.getAuthor()}</div>
                                     <div>${post.getContent()}</div>

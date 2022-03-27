@@ -59,6 +59,14 @@ public class BlogPost implements Serializable {
         this.author = author;
         this.content = content;
     }
+    
+    public BlogPost(String title, String author, String content, int id) {
+        this.dateCreated = new Date();
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.content = content;
+    }
 
     /**
      * @return the id
