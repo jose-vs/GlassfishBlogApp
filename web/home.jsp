@@ -44,6 +44,16 @@
                     </div>
                     <!-- All Posts -->
                     <div>
+                        <c:if test="${not empty requestScope.allPosts}">
+                            <c:forEach items="${allPosts}" var="post">
+                                <div>
+                                    <div>${post.getTitle()}</div>
+                                    <div>${post.getAuthor()}</div>
+                                    <div>${post.getContent()}</div>
+                                </div>
+
+                            </c:forEach>
+                        </c:if>
 
                     </div>
                 </div>

@@ -21,6 +21,9 @@
 
                     <label for="uname"><b>User name</b></label>
                     <input type="text" placeholder="Enter user name" name="uname" required>
+                    
+                    <label for="name"><b>Name</b></label>
+                    <input type="text" placeholder="Enter your name" name="name" required>
 
                     <!-- TODO check for repeat password -->
                     <label for="psw"><b>Password</b></label>
@@ -30,9 +33,9 @@
                     <input type="password" placeholder="Repeat Password" name="psw-repeat" required>
 
                     <%=(String)request.getAttribute("error")%>
-                    
+
                     <div class="clearfix">
-                        <button type="submit" class="loginbtn">Sign up</button>
+                        <button type="submit" class="signupbtn">Sign up</button>
                     </div>
                 </div>
             </form> 

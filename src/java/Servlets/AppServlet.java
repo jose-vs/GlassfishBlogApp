@@ -73,8 +73,8 @@ public class AppServlet extends HttpServlet {
 
         session = request.getSession(true);
         uName = request.getParameter("uname");
+        name = request.getParameter("name");
         psw = request.getParameter("psw");
-        name = "TESTNAME";
 
     }
 
@@ -95,18 +95,15 @@ public class AppServlet extends HttpServlet {
         User user = entityManager.find(User.class, uName);
 
         if (user != null && user.getPsw().equals(psw)) {
-            request.setAttribute("User", user);
             session.setAttribute("User", user);
             RequestDispatcher dispatcher = getServletContext().
                     getRequestDispatcher("/Home");
             dispatcher.forward(request, response);
-            return;
+        } else {
+            request.setAttribute("error", "Invalid username or password");
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
         }
 
-        logger.info("_________________BRUH___________________");
-        request.setAttribute("error", "Invalid username or password");
-        request.getRequestDispatcher("/login.jsp").forward(request, response);
-        
     }
 
     /**
@@ -125,29 +122,23 @@ public class AppServlet extends HttpServlet {
         User user = entityManager.find(User.class, uName);
 
         if (user != null) {
-            System.out.println("--------FOUND ME--------");
             request.setAttribute("error", "User already exists");
             request.getRequestDispatcher("/signup.jsp").forward(request, response);
         } else {
-            System.out.println("------------------ Registering User ------------------");
             user = new User(uName, psw, name);
             try {
                 userTransaction.begin();
                 entityManager.persist(user);
                 userTransaction.commit();
-                return;
+                session.setAttribute("User", user);
+                getServletContext()
+                        .getRequestDispatcher("/Home")
+                        .forward(request, response);
             } catch (NotSupportedException | SystemException | RollbackException
                     | HeuristicMixedException | HeuristicRollbackException | SecurityException ex) {
                 Logger.getLogger(AppServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            request.setAttribute("User", user);
-            session.setAttribute("User", user);
-            RequestDispatcher dispatcher = getServletContext().
-                    getRequestDispatcher("/Home");
-            dispatcher.forward(request, response);
         }
-
     }
 
     /**

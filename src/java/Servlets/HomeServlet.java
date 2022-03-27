@@ -4,21 +4,27 @@
  */
 package Servlets;
 
-import Entities.BlogPost;
 import Entities.User;
+import Entities.BlogPost;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletConfig;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.HeuristicMixedException;
+import jakarta.transaction.HeuristicRollbackException;
+import jakarta.transaction.NotSupportedException;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.SystemException;
 import jakarta.transaction.UserTransaction;
+import java.util.logging.Level;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -60,34 +66,17 @@ public class HomeServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-
-        session = request.getSession(true);
-        User u = (User) session.getAttribute("User");
-
         List<BlogPost> result
                 = entityManager.createQuery("SELECT b FROM BlogPost b").getResultList();
 
         if (result == null) {
             result = new ArrayList<>();
-        } else {
-            for (BlogPost b : result) {
-                logger.info("----------------------------------BLOG----------------------------------------------");
-                logger.info(String.valueOf(b.getContent()));
-            }
         }
 
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet TempServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet TempServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
+        request.setAttribute("allPosts", result);
+        RequestDispatcher dispatcher = getServletContext().
+                getRequestDispatcher("/home.jsp");
+        dispatcher.forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -116,6 +105,27 @@ public class HomeServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        session = request.getSession(true);
+        User u = (User) session.getAttribute("User");
+        String title = (String) request.getParameter("title");
+        String name = u.getName();
+        String content = (String) request.getParameter("text");
+
+        if (title != null && name != null && content != null) {
+            try {
+
+                userTransaction.begin();
+                entityManager.persist(
+                        new BlogPost(title, name, content)
+                );
+                userTransaction.commit();
+            } catch (NotSupportedException | SystemException | RollbackException
+                    | HeuristicMixedException | HeuristicRollbackException | SecurityException ex) {
+                Logger.getLogger(AppServlet.class.getName()).log(Level.SEVERE, null, ex);
+
+            }
+        }
+
         processRequest(request, response);
     }
 

@@ -7,21 +7,13 @@ package Entities;
 import jakarta.persistence.Column;
 import java.io.Serializable;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinColumns;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
 import java.util.Date;
 
 /**
@@ -39,20 +31,16 @@ public class BlogPost implements Serializable {
     @Column(name = "id")
     private int id;
 
-    @NotNull
     @Column(name = "title")
     private String title;
 
-    @NotNull
     @Column(name = "author")
     private String author;
 
-    @Lob
     @NotNull
     @Column(name = "content")
     private String content;
 
-    @Past
     @Column(name = "dateCreated")
     @Temporal(TemporalType.DATE)
     private Date dateCreated;
