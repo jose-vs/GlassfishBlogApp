@@ -30,6 +30,24 @@
                         <c:out value="${User.uName}"/>
                     </c:if>
                 </h1>
+                <hr>
+                <div>
+                    <!-- FORM BOX FOR POSTS -->
+                    <div>
+                        <form action="Home" method="POST">
+                            <label for="title">Title</label><br>
+                            <input type="text" id="title" name="title" value="Title"><br>
+                            <label for="text">Enter Text</label><br>
+                            <input type="text" id="text" name="text" value="Write your blog here"><br><br>
+                            <input type="submit" value="Submit">
+                        </form> 
+                    </div>
+                    <!-- All Posts -->
+                    <div>
+
+                    </div>
+                </div>
+
             </div>
         </div>
     </body>

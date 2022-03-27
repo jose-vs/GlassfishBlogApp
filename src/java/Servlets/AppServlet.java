@@ -5,7 +5,6 @@
 package Servlets;
 
 import Entities.User;
-import Entities.UserKey;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -77,17 +76,6 @@ public class AppServlet extends HttpServlet {
         psw = request.getParameter("psw");
         name = "TESTNAME";
 
-        /**
-         * TODO: check if this exists in the database then save it to the
-         * session
-         */
-//        if (entityManager != null) {
-//            Query query
-//                    = entityManager.createQuery("SELECT u FROM User u WHERE u.uName='"
-//                            + uName + "' AND u.psw='" + psw + "'");
-//
-//            userObj = (User) query.getSingleResult();
-//        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -104,21 +92,21 @@ public class AppServlet extends HttpServlet {
             throws ServletException, IOException {
 
         processRequest(request, response);
-        UserKey userKey = new UserKey(uName, psw);
-        User user = entityManager.find(User.class, userKey);
+        User user = entityManager.find(User.class, uName);
 
-        if (user != null) {
+        if (user != null && user.getPsw().equals(psw)) {
             request.setAttribute("User", user);
             session.setAttribute("User", user);
             RequestDispatcher dispatcher = getServletContext().
-                    getRequestDispatcher("/home.jsp");
+                    getRequestDispatcher("/Home");
             dispatcher.forward(request, response);
+            return;
         }
 
         logger.info("_________________BRUH___________________");
         request.setAttribute("error", "Invalid username or password");
         request.getRequestDispatcher("/login.jsp").forward(request, response);
-
+        
     }
 
     /**
@@ -134,8 +122,7 @@ public class AppServlet extends HttpServlet {
             throws ServletException, IOException {
 
         processRequest(request, response);
-        UserKey userKey = new UserKey(uName, psw);
-        User user = entityManager.find(User.class, userKey);
+        User user = entityManager.find(User.class, uName);
 
         if (user != null) {
             System.out.println("--------FOUND ME--------");
@@ -148,6 +135,7 @@ public class AppServlet extends HttpServlet {
                 userTransaction.begin();
                 entityManager.persist(user);
                 userTransaction.commit();
+                return;
             } catch (NotSupportedException | SystemException | RollbackException
                     | HeuristicMixedException | HeuristicRollbackException | SecurityException ex) {
                 Logger.getLogger(AppServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -156,7 +144,7 @@ public class AppServlet extends HttpServlet {
             request.setAttribute("User", user);
             session.setAttribute("User", user);
             RequestDispatcher dispatcher = getServletContext().
-                    getRequestDispatcher("/home.jsp");
+                    getRequestDispatcher("/Home");
             dispatcher.forward(request, response);
         }
 

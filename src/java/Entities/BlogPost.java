@@ -7,12 +7,21 @@ package Entities;
 import jakarta.persistence.Column;
 import java.io.Serializable;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import java.util.Date;
 
 /**
@@ -20,20 +29,60 @@ import java.util.Date;
  * @author jcvsa
  */
 @Entity
-@Table(name = "Blog")
-public class Blog implements Serializable {
+@Table(name = "BlogPost")
+public class BlogPost implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private int id;
+
+    @NotNull
+    @Column(name = "title")
+    private String title;
+
+    @NotNull
+    @Column(name = "author")
+    private String author;
+
+    @Lob
+    @NotNull
+    @Column(name = "content")
+    private String content;
+
+    @Past
+    @Column(name = "dateCreated")
+    @Temporal(TemporalType.DATE)
+    private Date dateCreated;
+
+//    @ManyToOne
+//    @JoinTable(name = "User")
+//    private User user;
+
+    public BlogPost() {
+        this.dateCreated = new Date();
+    }
+
+    public BlogPost(String title, String author, String content) {
+        this.dateCreated = new Date();
+        this.title = title;
+        this.author = author;
+        this.content = content;
+    }
 
     /**
      * @return the id
      */
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
     /**
      * @param id the id to set
      */
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -93,27 +142,19 @@ public class Blog implements Serializable {
         this.dateCreated = dateCreated;
     }
 
-    private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
-    @Column(name = "title")
-    private String title;
-
-    @Column(name = "author")
-    private String author;
-
-    @Column(name = "content")
-    private String content;
-
-    @Column(name = "dateCreated")
-    @Temporal(TemporalType.DATE)
-    private Date dateCreated;
-
-    public Blog() {
-    }
+//    /**
+//     * @return the user
+//     */
+//    public User getUser() {
+//        return user;
+//    }
+//
+//    /**
+//     * @param user the user to set
+//     */
+//    public void setUser(User user) {
+//        this.user = user;
+//    }
 
 //    @Override
 //    public int hashCode() {

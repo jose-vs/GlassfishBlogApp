@@ -22,11 +22,11 @@
                 response.sendRedirect(request.getContextPath() + "/home.jsp");
             %>
         </c:if>
-        
+
         <div>
             <h1>Welcome to My BlogApp</h1>
             <h2>Made by Jose Santos</h2>
-            
+
         </div>
         <div>
             <form action='<%= response.encodeURL("login.jsp") %>'>
@@ -36,6 +36,5 @@
                 <input type="submit" value="Sign up" />
             </form>
         </div>
-
     </body>
 </html>

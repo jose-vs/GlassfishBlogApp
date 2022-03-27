@@ -5,10 +5,6 @@
 package Entities;
 
 import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
 /**
  *
@@ -17,15 +13,13 @@ import javax.persistence.Id;
 public class UserKey implements Serializable {
     
     public String uName; 
-    public String psw; 
     
     public UserKey() { 
         
     }
     
-    public UserKey(String uName, String psw) { 
+    public UserKey(String uName) { 
         this.uName = uName; 
-        this.psw = psw; 
     }
 
     

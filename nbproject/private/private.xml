@@ -3,17 +3,18 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/jcvsa/Desktop/Uni/DSM/BlogApp/src/java/Entities/Blog.java</file>
+            <file>file:/C:/Users/jcvsa/Desktop/Uni/DSM/BlogApp/src/java/Entities/UserKey.java</file>
             <file>file:/C:/Users/jcvsa/Desktop/Uni/DSM/BlogApp/web/home.jsp</file>
-            <file>file:/C:/Users/jcvsa/Desktop/Uni/DSM/BlogApp/src/java/Servlets/HomeServlet.java</file>
             <file>file:/C:/Users/jcvsa/Desktop/Uni/DSM/BlogApp/src/conf/persistence.xml</file>
+            <file>file:/C:/Users/jcvsa/Desktop/Uni/DSM/BlogApp/src/java/Servlets/bruh.java</file>
+            <file>file:/C:/Users/jcvsa/Desktop/Uni/DSM/BlogApp/src/java/Servlets/HomeServlet.java</file>
             <file>file:/C:/Users/jcvsa/Desktop/Uni/DSM/BlogApp/src/java/Entities/User.java</file>
             <file>file:/C:/Users/jcvsa/Desktop/Uni/DSM/BlogApp/web/index.jsp</file>
             <file>file:/C:/Users/jcvsa/Desktop/Uni/DSM/BlogApp/web/login.jsp</file>
             <file>file:/C:/Users/jcvsa/Desktop/Uni/DSM/BlogApp/web/signup.jsp</file>
             <file>file:/C:/Users/jcvsa/Desktop/Uni/DSM/BlogApp/src/java/Servlets/AppServlet.java</file>
             <file>file:/C:/Users/jcvsa/Desktop/Uni/DSM/BlogApp/web/logout.jsp</file>
-            <file>file:/C:/Users/jcvsa/Desktop/Uni/DSM/BlogApp/src/java/Server/ValidateUser.java</file>
+            <file>file:/C:/Users/jcvsa/Desktop/Uni/DSM/BlogApp/src/java/Entities/BlogPost.java</file>
         </group>
     </open-files>
 </project-private>

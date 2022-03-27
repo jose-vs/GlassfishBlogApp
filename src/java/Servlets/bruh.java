@@ -6,9 +6,11 @@ package Servlets;
 
 import Entities.BlogPost;
 import Entities.User;
+import Entities.UserKey;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.servlet.ServletConfig;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,7 +20,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.HeuristicMixedException;
+import jakarta.transaction.HeuristicRollbackException;
+import jakarta.transaction.NotSupportedException;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.SystemException;
 import jakarta.transaction.UserTransaction;
+import java.lang.System.Logger.Level;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -27,8 +35,8 @@ import java.util.logging.Logger;
  *
  * @author jcvsa
  */
-@WebServlet(name = "HomeServlet", urlPatterns = {"/Home"})
-public class HomeServlet extends HttpServlet {
+@WebServlet(name = "BruhServlet", urlPatterns = {"/Bruh"})
+public class bruh extends HttpServlet {
 
     private HttpSession session;
     private Logger logger;
@@ -39,7 +47,7 @@ public class HomeServlet extends HttpServlet {
     @Resource
     private UserTransaction userTransaction;
 
-    public HomeServlet() {
+    public bruh() {
         logger = Logger.getLogger(this.getClass().getName());
     }
 
@@ -60,34 +68,46 @@ public class HomeServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-
-        session = request.getSession(true);
-        User u = (User) session.getAttribute("User");
-
-        List<BlogPost> result
-                = entityManager.createQuery("SELECT b FROM BlogPost b").getResultList();
-
-        if (result == null) {
-            result = new ArrayList<>();
-        } else {
-            for (BlogPost b : result) {
-                logger.info("----------------------------------BLOG----------------------------------------------");
-                logger.info(String.valueOf(b.getContent()));
-            }
-        }
-
         try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet TempServlet</title>");
+            out.println("<title>Servlet HomeServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet TempServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet HomeServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
+
+//        session = request.getSession(true);
+        
+//        List<BlogPost> result = 
+//                entityManager.createQuery("SELECT b FROM BlogPost b", BlogPost.class).getResultList();
+//        
+//        for (BlogPost b : result){ 
+//            logger.info("----------------------------------BLOG----------------------------------------------");
+//            logger.info(String.valueOf(b.getId()));
+//        }
+
+        /**
+         * TEST POST
+         */
+//        User u = (User) session.getAttribute("User");
+//        
+//        logger.info("-----------------------here ---------------------");
+//        logger.info(u.getuName());
+
+//        try {
+//            userTransaction.begin();
+//            entityManager.persist(new BlogPost("test", u.getName(), "test content"));
+//            userTransaction.commit();
+//        } catch (NotSupportedException | SystemException | RollbackException
+//                | HeuristicMixedException | HeuristicRollbackException | SecurityException ex) {
+//        }
+
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

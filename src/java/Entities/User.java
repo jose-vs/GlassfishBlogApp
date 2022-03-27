@@ -7,11 +7,12 @@ package Entities;
 import jakarta.persistence.Column;
 import java.io.Serializable;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -19,20 +20,22 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "User")
-@IdClass(value = UserKey.class)
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
     @Column(name = "username")
     private String uName;
 
-    @Id
     @Column(name = "password")
     private String psw;
 
     @Column(name = "name")
     private String name;
+
+//    @OneToMany(targetEntity = BlogPost.class)
+//    private List<BlogPost> blogs = new ArrayList<BlogPost>();
 
     public User() {
     }
@@ -107,4 +110,18 @@ public class User implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
+//    /**
+//     * @return the blogs
+//     */
+//    public List<BlogPost> getBlogs() {
+//        return blogs;
+//    }
+//
+//    /**
+//     * @param blogs the blogs to set
+//     */
+//    public void setBlogs(List<BlogPost> blogs) {
+//        this.blogs = blogs;
+//    }
 }
