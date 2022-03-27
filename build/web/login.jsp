@@ -4,6 +4,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -25,7 +26,9 @@
                     <label for="psw"><b>Password</b></label>
                     <input type="password" placeholder="Enter Password" name="psw" required>
 
-                    <%=(String)request.getAttribute("error")%>
+                    <c:if test='${not empty requestScope.error}'>
+                        <c:out value="${error}"/>
+                    </c:if>
 
                     <div class="clearfix">
                         <button type="submit" class="loginbtn">Login</button>
