@@ -36,20 +36,20 @@ import java.util.logging.Logger;
  */
 @WebServlet(name = "BlogServlet", urlPatterns = {"/Blog"})
 public class BlogServlet extends HttpServlet {
-
+    
     private HttpSession session;
     private Logger logger;
-
+    
     @PersistenceContext
     private EntityManager entityManager;
-
+    
     @Resource
     private UserTransaction userTransaction;
-
+    
     public BlogServlet() {
         logger = Logger.getLogger(this.getClass().getName());
     }
-
+    
     @Override
     public void init() {
         ServletConfig config = getServletConfig();
@@ -67,10 +67,10 @@ public class BlogServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-
+        
         session = request.getSession(true);
         User u = (User) session.getAttribute("User");
-
+        
         List<BlogPost> blogList = new ArrayList<>();
         if (entityManager != null) {
             String jpqlCommand
@@ -80,13 +80,14 @@ public class BlogServlet extends HttpServlet {
             query.setParameter("author", u.getuName());
             blogList = query.getResultList();
             logger.log(Level.INFO, "Successfully executed jpql query for species {0}", u.getuName());
+            
         }
-
+        
         request.setAttribute("blogList", blogList);
         RequestDispatcher dispatcher = getServletContext().
                 getRequestDispatcher("/viewblogs.jsp");
         dispatcher.forward(request, response);
-
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -115,13 +116,13 @@ public class BlogServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        
         int id = Integer.parseInt(request.getParameter("id"));
         String title = (String) request.getParameter("title");
         String content = (String) request.getParameter("content");
-
+        
         BlogPost blogEdit = entityManager.find(BlogPost.class, id);
-
+        
         blogEdit.setContent(content);
         blogEdit.setTitle(title);
         

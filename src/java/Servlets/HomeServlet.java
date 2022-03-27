@@ -107,15 +107,15 @@ public class HomeServlet extends HttpServlet {
             throws ServletException, IOException {
         session = request.getSession(true);
         String title = (String) request.getParameter("title");
-        String name = ((User) session.getAttribute("User")).getName();
+        String uName = ((User) session.getAttribute("User")).getuName();
         String content = (String) request.getParameter("text");
 
-        if (title != null && name != null && content != null) {
+        if (title != null && uName != null && content != null) {
             try {
 
                 userTransaction.begin();
                 entityManager.persist(
-                        new BlogPost(title, name, content)
+                        new BlogPost(title, uName, content)
                 );
                 userTransaction.commit();
             } catch (NotSupportedException | SystemException | RollbackException

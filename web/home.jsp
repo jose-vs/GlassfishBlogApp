@@ -12,7 +12,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Home Page</title>
     </head>
     <body>
         <div>
@@ -24,12 +24,13 @@
             </div>
             <!-- BODY -->
             <div>
-                <h1>
-                    Welcome
-                    <c:if test="${not empty sessionScope.User}">
-                        <c:out value="${User.uName}"/>
-                    </c:if>
-                </h1>
+                <c:if test="${not empty sessionScope.User}">
+                    <h1>
+                        Welcome
+                        <c:out value="${User.name}"/>
+                    </h1>
+                    <c:out value="Username: ${User.uName}"/>
+                </c:if>
                 <hr>
                 <div>
                     <!-- FORM BOX FOR POSTS -->
@@ -50,9 +51,9 @@
                         <c:if test="${not empty requestScope.allPosts}">
                             <c:forEach items="${allPosts}" var="post">
                                 <div style= 'border:1px solid #000000;'>
-                                    <div>${post.getTitle()}</div>
-                                    <div>${post.getAuthor()}</div>
-                                    <div>${post.getContent()}</div>
+                                    <div><b>Title: </b>${post.getTitle()}</div>
+                                    <div><b>Author: </b>${post.getAuthor()}</div><br>
+                                    <div><b>Content: </b>${post.getContent()}</div>
                                 </div>
 
                             </c:forEach>

@@ -19,7 +19,7 @@
     <body>
         <c:if test="${not empty sessionScope.User}">
             <%
-                response.sendRedirect(request.getContextPath() + "/home.jsp");
+                response.sendRedirect(request.getContextPath() + "/Home");
             %>
         </c:if>
 
